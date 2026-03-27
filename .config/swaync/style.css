@@ -1,0 +1,166 @@
+/* Catppuccin Mocha theme for SwayNC */
+
+* {
+    font-family: "JetBrainsMono Nerd Font", sans-serif;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.control-center {
+    background: rgba(30, 30, 46, 0.92);
+    border: 1px solid #45475a;
+    border-radius: 14px;
+    margin: 8px;
+    padding: 8px;
+}
+
+.control-center-list {
+    background: transparent;
+}
+
+.notification-row {
+    outline: none;
+}
+
+.notification {
+    background: #313244;
+    border: 1px solid #45475a;
+    border-radius: 10px;
+    margin: 4px 0;
+    padding: 0;
+}
+
+.notification-content {
+    padding: 8px 12px;
+}
+
+.notification-default-action {
+    border-radius: 10px;
+}
+
+.notification-default-action:hover {
+    background: rgba(203, 166, 247, 0.08);
+}
+
+.summary {
+    color: #cdd6f4;
+    font-size: 14px;
+}
+
+.body {
+    color: #a6adc8;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.time {
+    color: #6c7086;
+    font-size: 11px;
+}
+
+.close-button {
+    background: #45475a;
+    color: #cdd6f4;
+    border-radius: 50%;
+    min-width: 20px;
+    min-height: 20px;
+    margin: 4px;
+}
+
+.close-button:hover {
+    background: #f38ba8;
+    color: #1e1e2e;
+}
+
+/* Control center widgets */
+widget.title {
+    margin: 4px 8px;
+}
+
+widget.title > label {
+    color: #cba6f7;
+    font-size: 16px;
+}
+
+widget.title > button {
+    background: #45475a;
+    color: #cdd6f4;
+    border-radius: 8px;
+    padding: 4px 12px;
+    border: none;
+}
+
+widget.title > button:hover {
+    background: #f38ba8;
+    color: #1e1e2e;
+}
+
+/* DND toggle */
+widget.dnd {
+    margin: 4px 8px;
+    padding: 4px;
+}
+
+widget.dnd > switch {
+    background: #45475a;
+    border-radius: 12px;
+    border: none;
+}
+
+widget.dnd > switch:checked {
+    background: #cba6f7;
+}
+
+widget.dnd > switch slider {
+    background: #cdd6f4;
+    border-radius: 50%;
+}
+
+/* MPRIS player */
+widget.mpris {
+    background: #313244;
+    border-radius: 10px;
+    margin: 4px 8px;
+    padding: 8px;
+}
+
+widget.mpris > box > button {
+    color: #cdd6f4;
+    border: none;
+    background: transparent;
+}
+
+widget.mpris > box > button:hover {
+    color: #cba6f7;
+}
+
+/* Volume / Backlight sliders */
+widget.volume, widget.backlight {
+    background: #313244;
+    border-radius: 10px;
+    margin: 4px 8px;
+    padding: 8px;
+}
+
+trough {
+    background: #45475a;
+    border-radius: 6px;
+    min-height: 8px;
+}
+
+highlight {
+    background: #cba6f7;
+    border-radius: 6px;
+}
+
+slider {
+    background: #cdd6f4;
+    border-radius: 50%;
+    min-width: 16px;
+    min-height: 16px;
+}
+
+/* Critical urgency notifications */
+.critical {
+    border: 1px solid #f38ba8;
+}

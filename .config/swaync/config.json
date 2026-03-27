@@ -1,0 +1,43 @@
+{
+  "$schema": "/etc/xdg/swaync/configSchema.json",
+  "timeout": 10,
+  "timeout-low": 5,
+  "timeout-critical": 30,
+  "positionX": "right",
+  "positionY": "top",
+  "control-center-width": 400,
+  "fit-to-screen": false,
+  "layer": "overlay",
+  "control-center-layer": "top",
+  "cssPriority": "user",
+  "notification-2fa-action": true,
+  "notification-inline-replies": false,
+  "widgets": [
+    "title",
+    "dnd",
+    "mpris",
+    "volume",
+    "backlight",
+    "notifications"
+  ],
+  "widget-config": {
+    "title": {
+      "text": "Central de Controle",
+      "clear-all-button": true,
+      "button-text": "Limpar"
+    },
+    "dnd": {
+      "text": "Não Perturbe"
+    },
+    "volume": {
+      "label": "Volume"
+    },
+    "backlight": {
+      "label": "Brilho"
+    },
+    "mpris": {
+      "image-size": 96,
+      "image-radius": 12
+    }
+  }
+}

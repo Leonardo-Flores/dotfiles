@@ -1,0 +1,37 @@
+# ~/.config/starship.toml
+
+# Insere uma linha nova entre os comandos para ficar menos poluído
+add_newline = true
+
+[character]
+# Um símbolo simples e direto. Muda de cor se o comando falhar.
+success_symbol = "[➜](bold green)"
+error_symbol = "[✗](bold red)"
+
+[directory]
+# Mostra o caminho de forma inteligente
+truncation_length = 8
+truncation_symbol = "…/"
+style = "bold cyan"
+read_only = " 🔒"
+[git_branch]
+symbol = " "
+style = "bold purple"
+
+[git_status]
+# Só mostra se tiver algo sujo
+style = "bold red"
+
+[package]
+# Esconde versão de pacote genérico, mostra só se for específico (ex: node, python)
+disabled = true
+
+# Linguagens (Como você é dev Python, vamos garantir que ele apareça bonito)
+[python]
+symbol = " "
+style = "yellow"
+format = 'via [$symbol($version )]($style)'
+
+# Desabilita módulos que poluem muito (ex: aws, gcloud) a menos que você queira
+[aws]
+disabled = true

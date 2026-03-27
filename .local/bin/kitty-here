@@ -1,0 +1,23 @@
+#!/bin/sh
+# Opens kitty in the PWD of the currently focused terminal window.
+# Falls back to $HOME if the focused window is not a terminal.
+
+pid=$(hyprctl activewindow -j | jq '.pid')
+
+if [ -n "$pid" ] && [ "$pid" != "null" ]; then
+    # Find the deepest child process (the shell running inside the terminal)
+    child="$pid"
+    while true; do
+        next=$(pgrep -P "$child" | head -1)
+        [ -z "$next" ] && break
+        child="$next"
+    done
+
+    cwd=$(readlink -f "/proc/$child/cwd" 2>/dev/null)
+fi
+
+if [ -d "$cwd" ]; then
+    exec kitty --directory "$cwd"
+else
+    exec kitty
+fi
