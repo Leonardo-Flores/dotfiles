@@ -9,7 +9,7 @@
 
     "modules-left": ["hyprland/workspaces"],
     "modules-center": ["clock"],
-    "modules-right": ["tray", "pulseaudio", "network", "battery", "custom/notification"],
+    "modules-right": ["mpris", "tray", "pulseaudio", "network", "battery", "custom/notification", "custom/power"],
 
     "hyprland/workspaces": {
         "disable-scroll": true,
@@ -23,6 +23,22 @@
         "format-alt": " {:%A, %d %B %Y}",
         "tooltip-format": "<tt><small>{calendar}</small></tt>",
         "on-click": "gsimplecal"
+    },
+
+    "mpris": {
+        "format": "{player_icon} {artist} — {title}",
+        "format-paused": "{player_icon} {status_icon} {artist} — {title}",
+        "player-icons": {
+            "default": "",
+            "firefox": "",
+            "chromium": "",
+            "spotify": ""
+        },
+        "status-icons": {
+            "paused": ""
+        },
+        "max-length": 35,
+        "tooltip-format": "{player}: {title}\n{artist} — {album}"
     },
 
     "pulseaudio": {
@@ -60,6 +76,12 @@
         "format": "",
         "on-click": "swaync-client -t -sw",
         "escape": true
+    },
+
+    "custom/power": {
+        "tooltip": false,
+        "format": "⏻",
+        "on-click": "powermenu"
     },
 
     "tray": {

@@ -32,6 +32,22 @@ symbol = " "
 style = "yellow"
 format = 'via [$symbol($version )]($style)'
 
+# Show execution time for slow commands (>2s)
+[cmd_duration]
+min_time = 2000
+format = "took [$duration]($style) "
+style = "yellow dimmed"
+
+[nodejs]
+symbol = "󰎙 "
+style = "green"
+format = 'via [$symbol($version )]($style)'
+
+[lua]
+symbol = " "
+style = "blue"
+format = 'via [$symbol($version )]($style)'
+
 # Desabilita módulos que poluem muito (ex: aws, gcloud) a menos que você queira
 [aws]
 disabled = true
