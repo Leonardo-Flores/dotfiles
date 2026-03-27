@@ -5,13 +5,15 @@
   "timeout-critical": 30,
   "positionX": "right",
   "positionY": "top",
-  "control-center-width": 400,
+  "control-center-width": 380,
   "fit-to-screen": false,
   "layer": "overlay",
   "control-center-layer": "top",
   "cssPriority": "user",
   "notification-2fa-action": true,
   "notification-inline-replies": false,
+  "transition-time": 200,
+  "notification-window-width": 380,
   "widgets": [
     "title",
     "dnd",
@@ -22,22 +24,23 @@
   ],
   "widget-config": {
     "title": {
-      "text": "Central de Controle",
+      "text": "Notifications",
       "clear-all-button": true,
-      "button-text": "Limpar"
+      "button-text": "Clear"
     },
     "dnd": {
-      "text": "Não Perturbe"
+      "text": "Do Not Disturb"
     },
     "volume": {
       "label": "Volume"
     },
     "backlight": {
-      "label": "Brilho"
+      "label": "Brightness"
     },
     "mpris": {
-      "image-size": 96,
-      "image-radius": 12
+      "image-size": 64,
+      "image-radius": 8,
+      "autohide": true
     }
   }
 }

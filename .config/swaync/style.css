@@ -1,50 +1,92 @@
-/* Catppuccin Mocha theme for SwayNC */
+/* Catppuccin Mocha — SwayNC */
 
 * {
     font-family: "JetBrainsMono Nerd Font", sans-serif;
-    font-weight: bold;
+    font-weight: 500;
     font-size: 13px;
 }
 
+/* ── Control Center ── */
 .control-center {
-    background: rgba(30, 30, 46, 0.92);
-    border: 1px solid #45475a;
-    border-radius: 14px;
-    margin: 8px;
-    padding: 8px;
+    background: rgba(24, 24, 37, 0.92);
+    border: 1px solid rgba(69, 71, 90, 0.6);
+    border-radius: 12px;
+    margin: 6px;
+    padding: 6px;
+    color: #cdd6f4;
 }
 
 .control-center-list {
     background: transparent;
 }
 
-.notification-row {
-    outline: none;
+/* ── Blank / background ── */
+.blank-window {
+    background: transparent;
 }
 
-.notification {
-    background: #313244;
-    border: 1px solid #45475a;
-    border-radius: 10px;
-    margin: 4px 0;
+/* ── Notification popups ── */
+.floating-notifications {
+    background: transparent;
+}
+
+.floating-notifications .notification {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Notifications ── */
+.notification-row {
+    outline: none;
+    margin: 0;
     padding: 0;
 }
 
-.notification-content {
-    padding: 8px 12px;
+.notification-row .notification-background {
+    padding: 4px 6px;
+}
+
+.notification {
+    background: rgba(49, 50, 68, 0.85);
+    border: 1px solid rgba(69, 71, 90, 0.4);
+    border-radius: 10px;
+    margin: 0;
+    padding: 0;
+    transition: background 0.15s ease;
 }
 
 .notification-default-action {
     border-radius: 10px;
+    padding: 6px;
+    margin: 0;
+    background: transparent;
+    border: none;
+    color: #cdd6f4;
 }
 
 .notification-default-action:hover {
-    background: rgba(203, 166, 247, 0.08);
+    background: rgba(203, 166, 247, 0.06);
+}
+
+.notification-content {
+    padding: 4px 8px;
+    background: transparent;
+}
+
+.notification-content .image {
+    border-radius: 8px;
+    margin: 4px;
+    -gtk-icon-size: 48px;
+}
+
+.notification-content .app-icon {
+    -gtk-icon-size: 16px;
+    margin: 4px;
 }
 
 .summary {
     color: #cdd6f4;
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 600;
 }
 
 .body {
@@ -54,17 +96,21 @@
 }
 
 .time {
-    color: #6c7086;
+    color: #585b70;
     font-size: 11px;
+    font-weight: normal;
 }
 
 .close-button {
-    background: #45475a;
-    color: #cdd6f4;
+    background: rgba(69, 71, 90, 0.6);
+    color: #bac2de;
     border-radius: 50%;
     min-width: 20px;
     min-height: 20px;
-    margin: 4px;
+    margin: 6px;
+    padding: 0;
+    border: none;
+    box-shadow: none;
 }
 
 .close-button:hover {
@@ -72,95 +118,205 @@
     color: #1e1e2e;
 }
 
-/* Control center widgets */
-widget.title {
-    margin: 4px 8px;
-}
-
-widget.title > label {
-    color: #cba6f7;
-    font-size: 16px;
-}
-
-widget.title > button {
-    background: #45475a;
+/* ── Notification actions ── */
+.notification-action > button {
+    background: rgba(69, 71, 90, 0.4);
     color: #cdd6f4;
     border-radius: 8px;
-    padding: 4px 12px;
     border: none;
+    padding: 4px 12px;
+    margin: 2px;
 }
 
-widget.title > button:hover {
+.notification-action > button:hover {
+    background: rgba(203, 166, 247, 0.15);
+}
+
+/* ── Critical ── */
+.critical .notification {
+    border: 1px solid rgba(243, 139, 168, 0.5);
+}
+
+/* ── Grouped notifications ── */
+.notification-group {
+    transition: opacity 200ms ease;
+}
+
+.notification-group.collapsed.not-expanded {
+    opacity: 0.5;
+}
+
+/* ── Title widget ── */
+.widget-title {
+    margin: 6px 8px 2px 8px;
+}
+
+.widget-title > label {
+    color: #cba6f7;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.widget-title > button {
+    background: rgba(69, 71, 90, 0.5);
+    color: #bac2de;
+    border-radius: 8px;
+    padding: 4px 14px;
+    border: none;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background 0.15s ease;
+}
+
+.widget-title > button:hover {
     background: #f38ba8;
     color: #1e1e2e;
 }
 
-/* DND toggle */
-widget.dnd {
-    margin: 4px 8px;
-    padding: 4px;
+/* ── DND toggle ── */
+.widget-dnd {
+    margin: 2px 8px 6px 8px;
+    padding: 4px 0;
 }
 
-widget.dnd > switch {
+.widget-dnd > label {
+    color: #a6adc8;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.widget-dnd > switch {
     background: #45475a;
     border-radius: 12px;
     border: none;
+    min-height: 22px;
+    min-width: 42px;
 }
 
-widget.dnd > switch:checked {
+.widget-dnd > switch:checked {
     background: #cba6f7;
 }
 
-widget.dnd > switch slider {
+.widget-dnd > switch slider {
     background: #cdd6f4;
     border-radius: 50%;
+    min-width: 16px;
+    min-height: 16px;
+    margin: 3px;
 }
 
-/* MPRIS player */
-widget.mpris {
-    background: #313244;
-    border-radius: 10px;
+/* ── MPRIS player ── */
+.widget-mpris {
     margin: 4px 8px;
-    padding: 8px;
+    padding: 0;
 }
 
-widget.mpris > box > button {
+.widget-mpris .widget-mpris-player {
+    background: rgba(49, 50, 68, 0.85);
+    border-radius: 10px;
+    border: 1px solid rgba(69, 71, 90, 0.4);
+    margin: 0;
+    padding: 0;
+}
+
+.widget-mpris .widget-mpris-player .mpris-overlay {
+    padding: 10px 14px;
+    background: rgba(30, 30, 46, 0.6);
+    border-radius: 10px;
+}
+
+.widget-mpris .widget-mpris-player .mpris-overlay .widget-mpris-album-art {
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    -gtk-icon-size: 64px;
+}
+
+.widget-mpris .widget-mpris-player .mpris-overlay .widget-mpris-title {
     color: #cdd6f4;
-    border: none;
-    background: transparent;
+    font-weight: 600;
+    font-size: 13px;
 }
 
-widget.mpris > box > button:hover {
+.widget-mpris .widget-mpris-player .mpris-overlay .widget-mpris-subtitle {
+    color: #a6adc8;
+    font-size: 11px;
+    font-weight: normal;
+}
+
+.widget-mpris .widget-mpris-player .mpris-overlay > box > button {
+    color: #bac2de;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    min-width: 28px;
+    min-height: 28px;
+    padding: 0;
+    margin: 0 2px;
+}
+
+.widget-mpris .widget-mpris-player .mpris-overlay > box > button:hover {
+    color: #cba6f7;
+    background: rgba(203, 166, 247, 0.1);
+}
+
+.widget-mpris > box > button {
+    color: #585b70;
+    background: transparent;
+    border: none;
+}
+
+.widget-mpris > box > button:hover {
     color: #cba6f7;
 }
 
-/* Volume / Backlight sliders */
-widget.volume, widget.backlight {
-    background: #313244;
+.widget-mpris > box > button:disabled {
+    color: #313244;
+}
+
+/* ── Volume / Brightness sliders ── */
+.widget-volume,
+.widget-backlight {
+    background: rgba(49, 50, 68, 0.6);
     border-radius: 10px;
     margin: 4px 8px;
-    padding: 8px;
+    padding: 8px 12px;
+}
+
+.widget-volume > label,
+.widget-backlight > label {
+    color: #a6adc8;
+    font-size: 12px;
+    font-weight: 500;
+    margin-right: 8px;
 }
 
 trough {
     background: #45475a;
     border-radius: 6px;
-    min-height: 8px;
+    min-height: 6px;
 }
 
 highlight {
     background: #cba6f7;
     border-radius: 6px;
+    min-height: 6px;
 }
 
-slider {
+scale slider {
     background: #cdd6f4;
     border-radius: 50%;
-    min-width: 16px;
-    min-height: 16px;
+    min-width: 14px;
+    min-height: 14px;
+    margin: -4px 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* Critical urgency notifications */
-.critical {
-    border: 1px solid #f38ba8;
+scale slider:hover {
+    background: #cba6f7;
+}
+
+/* ── Empty state ── */
+.control-center .control-center-list-placeholder {
+    opacity: 0.4;
+    color: #585b70;
 }

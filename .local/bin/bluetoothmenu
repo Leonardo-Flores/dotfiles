@@ -1,0 +1,83 @@
+#!/bin/bash
+# Bluetooth menu using wofi
+
+power_status=$(bluetoothctl show 2>/dev/null | grep "Powered:" | awk '{print $2}')
+
+if [ "$power_status" = "no" ]; then
+    chosen=$(printf "  Power On\n" | wofi --dmenu --width 240 --height 55 --cache-file /dev/null --prompt "Bluetooth Off")
+    [[ "$chosen" == *"Power On"* ]] && bluetoothctl power on
+    exit 0
+fi
+
+# Build device list into arrays
+entries=()
+macs=()
+actions=()
+
+while IFS= read -r line; do
+    [ -z "$line" ] && continue
+    mac=$(echo "$line" | awk '{print $2}')
+    name=$(echo "$line" | cut -d' ' -f3-)
+    info=$(bluetoothctl info "$mac" 2>/dev/null)
+    connected=$(echo "$info" | grep "Connected:" | awk '{print $2}')
+    icon=$(echo "$info" | grep "Icon:" | awk '{print $2}')
+
+    case "$icon" in
+        audio-headset|audio-headphones) sym="" ;;
+        input-keyboard)                 sym="" ;;
+        input-mouse)                    sym="" ;;
+        input-gaming)                   sym="" ;;
+        phone)                          sym="" ;;
+        computer)                       sym="" ;;
+        *)                              sym="" ;;
+    esac
+
+    if [ "$connected" = "yes" ]; then
+        entries+=("$sym  $name  (connected)")
+        actions+=("disconnect")
+    else
+        entries+=("$sym  $name")
+        actions+=("connect")
+    fi
+    macs+=("$mac")
+done < <(bluetoothctl devices Paired 2>/dev/null)
+
+# Build wofi input
+menu=""
+for e in "${entries[@]}"; do
+    menu+="$e\n"
+done
+menu+="  Scan for devices\n  Power Off"
+
+lines=$(( ${#entries[@]} + 2 ))
+height=$(( lines * 36 + 20 ))
+[ "$height" -gt 320 ] && height=320
+
+chosen=$(printf "$menu" | wofi --dmenu --width 300 --height "$height" --cache-file /dev/null --prompt "Bluetooth")
+[ -z "$chosen" ] && exit 0
+
+case "$chosen" in
+    *"Scan for devices"*)
+        notify-send -t 3000 "Bluetooth" "Scanning..."
+        bluetoothctl --timeout 8 scan on &>/dev/null &
+        sleep 8
+        exec "$0"
+        ;;
+    *"Power Off"*)
+        bluetoothctl power off
+        ;;
+    *)
+        for i in "${!entries[@]}"; do
+            if [ "${entries[$i]}" = "$chosen" ]; then
+                if [ "${actions[$i]}" = "disconnect" ]; then
+                    bluetoothctl disconnect "${macs[$i]}"
+                    notify-send -t 2000 "Bluetooth" "Disconnected from $(echo "$chosen" | sed 's/.*  //;s/  .*//')"
+                else
+                    notify-send -t 2000 "Bluetooth" "Connecting..."
+                    bluetoothctl connect "${macs[$i]}"
+                fi
+                break
+            fi
+        done
+        ;;
+esac

@@ -54,14 +54,10 @@ return {
             }),
             sources = cmp.config.sources({
                 { name = 'nvim_lsp' },
-                { name = 'minuet' },
                 { name = 'luasnip' },
             }, {
                 { name = 'buffer' },
-            }),
-            performance = {
-                fetching_timeout = 5000,
-            }
+            })
         })
     end
 }

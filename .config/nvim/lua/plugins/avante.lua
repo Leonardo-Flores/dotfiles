@@ -5,12 +5,16 @@ return {
     version = false,
     opts = {
         provider = "claude",
-        claude = {
-            endpoint = "https://api.anthropic.com",
-            model = "claude-sonnet-4-20250514",
-            timeout = 30000,
-            max_tokens = 8192,
-            temperature = 0,
+        providers = {
+            claude = {
+                endpoint = "https://api.anthropic.com",
+                model = "claude-sonnet-4-20250514",
+                timeout = 30000,
+                extra_request_body = {
+                    max_tokens = 8192,
+                    temperature = 0,
+                },
+            },
         },
     },
     build = "make",

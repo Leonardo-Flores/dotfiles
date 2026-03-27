@@ -1,91 +1,134 @@
 {
     "layer": "top",
     "position": "top",
-    "height": 34,
+    "height": 28,
     "spacing": 0,
-    "margin-top": 4,
-    "margin-left": 8,
-    "margin-right": 8,
-
-    "modules-left": ["hyprland/workspaces"],
-    "modules-center": ["clock"],
-    "modules-right": ["mpris", "tray", "pulseaudio", "network", "battery", "custom/notification", "custom/power"],
-
+    "margin-top": 0,
+    "margin-left": 0,
+    "margin-right": 0,
+    "modules-left": [
+        "hyprland/workspaces"
+    ],
+    "modules-center": [
+        "clock"
+    ],
+    "modules-right": [
+        "mpris",
+        "tray",
+        "bluetooth",
+        "pulseaudio",
+        "network",
+        "battery",
+        "custom/notification",
+        "custom/power"
+    ],
     "hyprland/workspaces": {
         "disable-scroll": true,
         "all-outputs": true,
         "format": "{name}",
         "on-click": "activate"
     },
-
     "clock": {
-        "format": " {:%H:%M | %d}",
-        "format-alt": " {:%A, %d %B %Y}",
+        "format": "{:%H:%M | %d}",
+        "format-alt": "{:%a %d %b %Y}",
         "tooltip-format": "<tt><small>{calendar}</small></tt>",
-        "on-click": "gsimplecal"
+        "on-scroll-up": "shift_up",
+        "on-scroll-down": "shift_down",
+        "smooth-scrolling-threshold": 1,
+        "calendar": {
+            "mode": "month",
+            "weeks-pos": "left",
+            "on-scroll": 1,
+            "format": {
+                "months": "<span color='#cba6f7'><b>{}</b></span>",
+                "days": "<span color='#cdd6f4'>{}</span>",
+                "weeks": "<span color='#585b70'>{}</span>",
+                "weekdays": "<span color='#f5c2e7'><b>{}</b></span>",
+                "today": "<span color='#f38ba8'><b><u>{}</u></b></span>"
+            }
+        },
+        "actions": {
+            "on-click-right": "mode",
+            "on-scroll-up": "shift_up",
+            "on-scroll-down": "shift_down"
+        }
     },
-
     "mpris": {
-        "format": "{player_icon} {artist} — {title}",
-        "format-paused": "{player_icon} {status_icon} {artist} — {title}",
+        "format": "{player_icon} {title}",
+        "format-paused": "{player_icon} {title}",
         "player-icons": {
-            "default": "",
-            "firefox": "",
-            "chromium": "",
-            "spotify": ""
+            "default": "",
+            "firefox": "",
+            "chromium": "",
+            "spotify": ""
         },
         "status-icons": {
-            "paused": ""
+            "paused": ""
         },
-        "max-length": 35,
+        "max-length": 25,
         "tooltip-format": "{player}: {title}\n{artist} — {album}"
     },
-
+    "bluetooth": {
+        "format": "",
+        "format-connected": " {num_connections}",
+        "format-disabled": "",
+        "tooltip-format": "{controller_alias}\n{num_connections} connected",
+        "tooltip-format-connected": "{controller_alias}\n{num_connections} connected\n\n{device_enumerate}",
+        "tooltip-format-enumerate-connected": "{device_alias}",
+        "on-click": "/home/leonardoflores/.local/bin/bluetoothmenu",
+        "on-click-right": "bluetoothctl power toggle"
+    },
     "pulseaudio": {
         "format": "{icon} {volume}%",
-        "format-muted": " Muted",
+        "format-muted": "",
         "format-icons": {
-            "default": ["", "", ""]
+            "default": [
+                "",
+                "",
+                ""
+            ]
         },
         "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
         "on-click-right": "pavucontrol",
         "on-scroll-up": "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 2%+",
         "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"
     },
-
     "network": {
-        "format-wifi": " {signalStrength}%",
-        "format-ethernet": " {ifname}",
-        "format-disconnected": " Off",
+        "format-wifi": " {signalStrength}%",
+        "format-ethernet": "",
+        "format-disconnected": "",
         "tooltip-format-wifi": "{essid} ({signalStrength}%)",
+        "tooltip-format-ethernet": "{ifname}: {ipaddr}/{cidr}",
         "on-click": "nm-connection-editor"
     },
-
     "battery": {
         "states": {
             "warning": 30,
             "critical": 15
         },
         "format": "{icon} {capacity}%",
-        "format-charging": " {capacity}%",
-        "format-icons": ["", "", "", "", ""]
+        "format-charging": " {capacity}%",
+        "format-icons": [
+            "",
+            "",
+            "",
+            "",
+            ""
+        ]
     },
-
     "custom/notification": {
         "tooltip": false,
-        "format": "",
+        "format": "",
         "on-click": "swaync-client -t -sw",
         "escape": true
     },
-
     "custom/power": {
         "tooltip": false,
-        "format": "⏻",
-        "on-click": "powermenu"
+        "format": "",
+        "on-click": "/home/leonardoflores/.local/bin/powermenu"
     },
-
     "tray": {
-        "icon-size": 18,
-        "spacing": 10
+        "icon-size": 14,
+        "spacing": 6
     }
 }
