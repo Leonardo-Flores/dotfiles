@@ -1,10 +1,12 @@
 #!/bin/sh
-# Cycle to a random wallpaper with a nice transition
+# Cycle to a random wallpaper — updates desktop, lock screen, and SDDM
 
-WALLPAPER_DIR="$HOME/.config/hypr/wallpapers"
-CACHE="$HOME/.cache/current-wallpaper"
+BANK="$HOME/wallpapers/bank"
+CURRENT="$HOME/wallpapers/current.jpg"
+SDDM_BG="/usr/share/sddm/themes/sugar-candy/Backgrounds/wallpaper.jpg"
 
-wallpaper=$(find "$WALLPAPER_DIR" -type f \( -name '*.png' -o -name '*.jpg' \) | shuf -n 1)
+wallpaper=$(find "$BANK" -type f \( -name '*.png' -o -name '*.jpg' \) | shuf -n 1)
 
-cp "$wallpaper" "$CACHE"
-awww img "$wallpaper" --transition-type grow --transition-pos 0.5,0.5 --transition-duration 1
+cp "$wallpaper" "$CURRENT"
+sudo cp "$CURRENT" "$SDDM_BG"
+awww img "$CURRENT" --transition-type grow --transition-pos 0.5,0.5 --transition-duration 1

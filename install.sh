@@ -109,7 +109,14 @@ green "Configuring SDDM..."
 sudo mkdir -p /etc/sddm.conf.d
 echo -e "[Theme]\nCurrent=sugar-candy" | sudo tee /etc/sddm.conf.d/theme.conf > /dev/null
 sudo cp "$DOTFILES/sddm/sugar-candy-theme.conf" /usr/share/sddm/themes/sugar-candy/theme.conf
-sudo cp "$HOME/.config/hypr/wallpapers/wallhaven-g83d8d.jpg" /usr/share/sddm/themes/sugar-candy/Backgrounds/wallpaper.jpg
+
+# Set initial wallpaper and sync to SDDM
+cp "$HOME/wallpapers/bank/wallhaven-g83d8d.jpg" "$HOME/wallpapers/current.jpg"
+sudo cp "$HOME/wallpapers/current.jpg" /usr/share/sddm/themes/sugar-candy/Backgrounds/wallpaper.jpg
+
+# Allow wallpaper-cycle.sh to update SDDM wallpaper without password
+echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/cp * /usr/share/sddm/themes/sugar-candy/Backgrounds/wallpaper.jpg" | sudo tee /etc/sudoers.d/wallpaper > /dev/null
+sudo chmod 440 /etc/sudoers.d/wallpaper
 
 # --- Make scripts executable ---
 chmod +x "$HOME/.config/hypr/wallpaper.sh"
