@@ -264,11 +264,12 @@
     color: #cdd6f4;
     background: rgba(69, 71, 90, 0.7);
     border: none;
-    border-radius: 50%;
-    min-width: 22px;
-    min-height: 22px;
+    border-radius: 6px;
+    min-width: 20px;
+    min-height: 20px;
+    max-height: 40px;
     margin: 0;
-    padding: 0;
+    padding: 4px 2px;
 }
 
 .widget-mpris > box > button:hover {
@@ -281,6 +282,7 @@
     background: transparent;
     min-width: 0;
     min-height: 0;
+    max-height: 0;
     padding: 0;
     margin: 0;
 }
