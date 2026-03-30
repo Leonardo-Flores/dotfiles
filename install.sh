@@ -107,9 +107,9 @@ sudo systemctl enable sddm
 # --- Configure SDDM theme ---
 green "Configuring SDDM..."
 sudo mkdir -p /etc/sddm.conf.d
-echo -e "[Theme]\nCurrent=catppuccin" | sudo tee /etc/sddm.conf.d/theme.conf > /dev/null
-sudo cp "$DOTFILES/sddm/catppuccin-theme.conf" /usr/share/sddm/themes/catppuccin/theme.conf
-sudo cp "$HOME/.config/hypr/wallpapers/wallhaven-g83d8d.jpg" /usr/share/sddm/themes/catppuccin/backgrounds/wallpaper.jpg
+echo -e "[Theme]\nCurrent=sugar-candy" | sudo tee /etc/sddm.conf.d/theme.conf > /dev/null
+sudo cp "$DOTFILES/sddm/sugar-candy-theme.conf" /usr/share/sddm/themes/sugar-candy/theme.conf
+sudo cp "$HOME/.config/hypr/wallpapers/wallhaven-g83d8d.jpg" /usr/share/sddm/themes/sugar-candy/Backgrounds/wallpaper.jpg
 
 # --- Make scripts executable ---
 chmod +x "$HOME/.config/hypr/wallpaper.sh"
