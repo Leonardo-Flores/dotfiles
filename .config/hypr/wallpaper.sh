@@ -10,5 +10,5 @@ sleep 1  # wait for swww-daemon
 # Pick a random wallpaper
 wallpaper=$(find "$WALLPAPER_DIR" -type f \( -name '*.png' -o -name '*.jpg' \) | shuf -n 1)
 
-echo "$wallpaper" > "$CACHE"
+cp "$wallpaper" "$CACHE"
 awww img "$wallpaper" --transition-type grow --transition-pos 0.5,0.5 --transition-duration 1
