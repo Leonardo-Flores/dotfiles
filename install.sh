@@ -87,7 +87,7 @@ yay -S --needed --noconfirm "${AUR_PKGS[@]}"
 # --- Symlink dotfiles with stow ---
 green "Linking dotfiles..."
 cd "$DOTFILES"
-stow -v --target="$HOME" .
+stow -v --ignore='sddm' --ignore='install.sh' --target="$HOME" .
 
 # --- Set zsh as default shell ---
 if [ "$SHELL" != "$(which zsh)" ]; then
@@ -103,6 +103,13 @@ sudo systemctl enable --now docker
 sudo systemctl enable --now cups
 sudo systemctl enable --now power-profiles-daemon
 sudo systemctl enable sddm
+
+# --- Configure SDDM theme ---
+green "Configuring SDDM..."
+sudo mkdir -p /etc/sddm.conf.d
+echo -e "[Theme]\nCurrent=catppuccin" | sudo tee /etc/sddm.conf.d/theme.conf > /dev/null
+sudo cp "$DOTFILES/sddm/catppuccin-theme.conf" /usr/share/sddm/themes/catppuccin/theme.conf
+sudo cp "$HOME/.config/hypr/wallpapers/wallhaven-g83d8d.jpg" /usr/share/sddm/themes/catppuccin/backgrounds/wallpaper.jpg
 
 # --- Make scripts executable ---
 chmod +x "$HOME/.config/hypr/wallpaper.sh"
