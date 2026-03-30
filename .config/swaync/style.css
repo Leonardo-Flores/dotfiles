@@ -260,17 +260,24 @@
 }
 
 .widget-mpris > box > button {
-    color: #585b70;
-    background: transparent;
+    color: #a6adc8;
+    background: rgba(69, 71, 90, 0.5);
     border: none;
+    border-radius: 50%;
+    min-width: 24px;
+    min-height: 24px;
+    margin: 0 2px;
+    padding: 0;
 }
 
 .widget-mpris > box > button:hover {
     color: #cba6f7;
+    background: rgba(203, 166, 247, 0.15);
 }
 
 .widget-mpris > box > button:disabled {
     color: #313244;
+    background: transparent;
 }
 
 /* ── Volume / Brightness sliders ── */
