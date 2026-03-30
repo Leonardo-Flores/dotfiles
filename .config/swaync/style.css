@@ -208,14 +208,14 @@
 /* ── MPRIS player ── */
 .widget-mpris {
     margin: 4px 8px;
-    padding: 0;
+    padding: 0 4px;
 }
 
 .widget-mpris .widget-mpris-player {
     background: rgba(49, 50, 68, 0.85);
     border-radius: 10px;
     border: 1px solid rgba(69, 71, 90, 0.4);
-    margin: 0;
+    margin: 0 20px;
     padding: 0;
 }
 
@@ -259,25 +259,30 @@
     background: rgba(203, 166, 247, 0.1);
 }
 
+/* Carousel prev/next buttons */
 .widget-mpris > box > button {
-    color: #a6adc8;
-    background: rgba(69, 71, 90, 0.5);
+    color: #cdd6f4;
+    background: rgba(69, 71, 90, 0.7);
     border: none;
     border-radius: 50%;
-    min-width: 24px;
-    min-height: 24px;
-    margin: 0 2px;
+    min-width: 22px;
+    min-height: 22px;
+    margin: 0;
     padding: 0;
 }
 
 .widget-mpris > box > button:hover {
     color: #cba6f7;
-    background: rgba(203, 166, 247, 0.15);
+    background: rgba(203, 166, 247, 0.2);
 }
 
 .widget-mpris > box > button:disabled {
-    color: #313244;
+    color: transparent;
     background: transparent;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
 }
 
 /* ── Volume / Brightness sliders ── */
