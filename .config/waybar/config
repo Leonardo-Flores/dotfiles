@@ -75,7 +75,7 @@
         "tooltip-format": "{controller_alias}\n{num_connections} connected",
         "tooltip-format-connected": "{controller_alias}\n{num_connections} connected\n\n{device_enumerate}",
         "tooltip-format-enumerate-connected": "{device_alias}",
-        "on-click": "/home/leonardoflores/.local/bin/bluetoothmenu",
+        "on-click": "bluetoothmenu",
         "on-click-right": "bash -c 'if bluetoothctl show | grep -q \"Powered: yes\"; then bluetoothctl power off; else bluetoothctl power on; fi'"
     },
     "pulseaudio": {
@@ -99,7 +99,7 @@
         "format-disconnected": "",
         "tooltip-format-wifi": "{essid} ({signalStrength}%)",
         "tooltip-format-ethernet": "{ifname}: {ipaddr}/{cidr}",
-        "on-click": "/home/leonardoflores/.local/bin/wifimenu",
+        "on-click": "wifimenu",
         "on-click-right": "nm-connection-editor"
     },
     "battery": {
@@ -126,7 +126,7 @@
     "custom/power": {
         "tooltip": false,
         "format": "",
-        "on-click": "/home/leonardoflores/.local/bin/powermenu"
+        "on-click": "powermenu"
     },
     "tray": {
         "icon-size": 14,

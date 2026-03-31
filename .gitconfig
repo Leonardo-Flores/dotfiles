@@ -1,3 +1,13 @@
 [user]
 	email = leonardo.flores@berzerk.com.br
 	name = Leonardo Flores
+[core]
+	editor = nvim
+[init]
+	defaultBranch = main
+[pull]
+	rebase = true
+[merge]
+	tool = nvimdiff
+[diff]
+	tool = nvimdiff

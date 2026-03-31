@@ -22,7 +22,7 @@ PACMAN_PKGS=(
     waybar swaync wofi
 
     # Terminal + shell tools
-    kitty starship tmux zoxide neovim lazygit ripgrep jq unzip btop fastfetch
+    kitty starship tmux zoxide neovim lazygit ripgrep fzf jq unzip btop fastfetch
 
     # Wallpaper + screenshots
     awww grim slurp swappy wl-clipboard cliphist
@@ -50,7 +50,7 @@ PACMAN_PKGS=(
     nodejs npm docker docker-compose
 
     # Other
-    stow nano vim power-profiles-daemon
+    stow nano vim power-profiles-daemon stylua python-black python-isort
 )
 
 # --- AUR packages (installed via yay) ---
@@ -66,6 +66,7 @@ AUR_PKGS=(
     sddm-sugar-candy-git
     swayosd-git
     adwaita-dark
+    prettierd
 )
 
 # --- Install pacman packages ---
