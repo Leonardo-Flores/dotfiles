@@ -76,7 +76,7 @@
         "tooltip-format-connected": "{controller_alias}\n{num_connections} connected\n\n{device_enumerate}",
         "tooltip-format-enumerate-connected": "{device_alias}",
         "on-click": "/home/leonardoflores/.local/bin/bluetoothmenu",
-        "on-click-right": "bluetoothctl power toggle"
+        "on-click-right": "bash -c 'if bluetoothctl show | grep -q \"Powered: yes\"; then bluetoothctl power off; else bluetoothctl power on; fi'"
     },
     "pulseaudio": {
         "format": "{icon} {volume}%",
@@ -91,7 +91,7 @@
         "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
         "on-click-right": "pavucontrol",
         "on-scroll-up": "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 2%+",
-        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"
+        "on-scroll-down": "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 2%-"
     },
     "network": {
         "format-wifi": " {signalStrength}%",
