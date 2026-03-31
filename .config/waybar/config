@@ -99,7 +99,8 @@
         "format-disconnected": "",
         "tooltip-format-wifi": "{essid} ({signalStrength}%)",
         "tooltip-format-ethernet": "{ifname}: {ipaddr}/{cidr}",
-        "on-click": "nm-connection-editor"
+        "on-click": "/home/leonardoflores/.local/bin/wifimenu",
+        "on-click-right": "nm-connection-editor"
     },
     "battery": {
         "states": {
