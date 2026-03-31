@@ -4,23 +4,32 @@
 wifi_status=$(nmcli radio wifi)
 
 if [ "$wifi_status" = "disabled" ]; then
-    chosen=$(printf "  Turn Wi-Fi On\n" | wofi --dmenu --width 300 --height 55 --cache-file /dev/null --prompt "Wi-Fi Off")
+    chosen=$(echo "  Turn Wi-Fi On" | wofi --dmenu --width 300 --height 55 --cache-file /dev/null --prompt "Wi-Fi Off")
     [[ "$chosen" == *"Turn Wi-Fi On"* ]] && nmcli radio wifi on
     exit 0
 fi
 
 # Get current connection
-current_ssid=$(nmcli -t -f active,ssid dev wifi | grep "^yes:" | cut -d: -f2)
+current_ssid=$(nmcli -t -f active,ssid dev wifi | grep "^yes:" | cut -d: -f2-)
 
-# Scan in background and list networks
+# Scan and list networks
 nmcli dev wifi rescan 2>/dev/null
 sleep 1
 
 entries=()
 ssids=()
+declare -A seen
 
-while IFS='|' read -r ssid signal security active; do
+while IFS= read -r line; do
+    # Format: SSID:SIGNAL:SECURITY — parse from the right
+    security="${line##*:}"
+    rest="${line%:*}"
+    signal="${rest##*:}"
+    ssid="${rest%:*}"
+
     [ -z "$ssid" ] && continue
+    [[ -n "${seen[$ssid]}" ]] && continue
+    seen[$ssid]=1
 
     # Signal icon
     if [ "$signal" -ge 75 ]; then
@@ -35,7 +44,7 @@ while IFS='|' read -r ssid signal security active; do
 
     # Lock icon for secured networks
     lock=""
-    [[ "$security" != "--" && "$security" != "" ]] && lock=" "
+    [[ -n "$security" ]] && lock="  "
 
     if [ "$ssid" = "$current_ssid" ]; then
         entries+=("$icon  $ssid$lock  (connected)")
@@ -43,12 +52,13 @@ while IFS='|' read -r ssid signal security active; do
         entries+=("$icon  $ssid$lock  ${signal}%")
     fi
     ssids+=("$ssid")
-done < <(nmcli -t -f ssid,signal,security,active dev wifi list | sort -t: -k2 -nr | awk -F: '!seen[$1]++ {OFS="|"; print $1,$2,$3,$4}')
+done < <(nmcli -t -f ssid,signal,security dev wifi list | sort -t: -k2 -nr)
 
 # Build wofi input
 menu=""
 for e in "${entries[@]}"; do
-    menu+="$e\n"
+    menu+="$e
+"
 done
 menu+="  Turn Wi-Fi Off"
 
@@ -56,7 +66,7 @@ lines=$(( ${#entries[@]} + 1 ))
 height=$(( lines * 36 + 20 ))
 [ "$height" -gt 420 ] && height=420
 
-chosen=$(printf "$menu" | wofi --dmenu --width 340 --height "$height" --cache-file /dev/null --prompt "Wi-Fi")
+chosen=$(echo "$menu" | wofi --dmenu --width 340 --height "$height" --cache-file /dev/null --prompt "Wi-Fi")
 [ -z "$chosen" ] && exit 0
 
 case "$chosen" in
@@ -65,22 +75,18 @@ case "$chosen" in
         notify-send -t 2000 "Wi-Fi" "Wi-Fi turned off"
         ;;
     *)
-        # Find which SSID was selected
         for i in "${!entries[@]}"; do
             if [ "${entries[$i]}" = "$chosen" ]; then
                 ssid="${ssids[$i]}"
 
                 if [ "$ssid" = "$current_ssid" ]; then
-                    # Already connected — disconnect
                     nmcli con down id "$ssid" 2>/dev/null
                     notify-send -t 2000 "Wi-Fi" "Disconnected from $ssid"
                 else
-                    # Check if we have a saved connection
                     if nmcli -t -f name con show | grep -qx "$ssid"; then
                         notify-send -t 2000 "Wi-Fi" "Connecting to $ssid..."
                         nmcli con up id "$ssid"
                     else
-                        # New network — ask for password
                         password=$(wofi --dmenu --width 340 --height 55 --cache-file /dev/null --prompt "Password for $ssid" --password)
                         if [ -n "$password" ]; then
                             notify-send -t 2000 "Wi-Fi" "Connecting to $ssid..."
