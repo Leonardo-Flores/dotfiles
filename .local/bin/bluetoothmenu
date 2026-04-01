@@ -4,8 +4,12 @@
 power_status=$(bluetoothctl show 2>/dev/null | grep "Powered:" | awk '{print $2}')
 
 if [ "$power_status" = "no" ]; then
-    chosen=$(printf "  Power On\n" | wofi --dmenu --width 240 --height 55 --cache-file /dev/null --prompt "Bluetooth Off")
-    [[ "$chosen" == *"Power On"* ]] && bluetoothctl power on
+    chosen=$(printf "  Power On\n" | wofi --dmenu -Dprint_command=false --width 240 --height 55 --cache-file /dev/null --prompt "Bluetooth Off")
+    if [[ "$chosen" == *"Power On"* ]]; then
+        bluetoothctl power on
+        sleep 1
+        exec "$0"
+    fi
     exit 0
 fi
 
@@ -53,7 +57,7 @@ lines=$(( ${#entries[@]} + 2 ))
 height=$(( lines * 36 + 20 ))
 [ "$height" -gt 320 ] && height=320
 
-chosen=$(printf "$menu" | wofi --dmenu --width 300 --height "$height" --cache-file /dev/null --prompt "Bluetooth")
+chosen=$(printf "$menu" | wofi --dmenu -Dprint_command=false --width 300 --height "$height" --cache-file /dev/null --prompt "Bluetooth")
 [ -z "$chosen" ] && exit 0
 
 case "$chosen" in

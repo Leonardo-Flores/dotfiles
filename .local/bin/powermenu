@@ -3,7 +3,7 @@
 
 options="  Lock\n  Logout\n  Suspend\n  Reboot\n  Shutdown"
 
-chosen=$(echo -e "$options" | wofi --dmenu --width 200 --height 260 --cache-file /dev/null --prompt "Power")
+chosen=$(echo -e "$options" | wofi --dmenu -Dprint_command=false --width 200 --height 260 --cache-file /dev/null --prompt "Power")
 
 case "$chosen" in
     *Lock)     hyprlock ;;

@@ -4,7 +4,7 @@
 wifi_status=$(nmcli radio wifi)
 
 if [ "$wifi_status" = "disabled" ]; then
-    chosen=$(echo "  Turn Wi-Fi On" | wofi --dmenu --width 300 --height 55 --cache-file /dev/null --prompt "Wi-Fi Off")
+    chosen=$(echo "  Turn Wi-Fi On" | wofi --dmenu -Dprint_command=false --width 300 --height 55 --cache-file /dev/null --prompt "Wi-Fi Off")
     [[ "$chosen" == *"Turn Wi-Fi On"* ]] && nmcli radio wifi on
     exit 0
 fi
@@ -66,7 +66,7 @@ lines=$(( ${#entries[@]} + 1 ))
 height=$(( lines * 36 + 20 ))
 [ "$height" -gt 420 ] && height=420
 
-chosen=$(echo "$menu" | wofi --dmenu --width 340 --height "$height" --cache-file /dev/null --prompt "Wi-Fi")
+chosen=$(echo "$menu" | wofi --dmenu -Dprint_command=false --width 340 --height "$height" --cache-file /dev/null --prompt "Wi-Fi")
 [ -z "$chosen" ] && exit 0
 
 case "$chosen" in
@@ -87,7 +87,7 @@ case "$chosen" in
                         notify-send -t 2000 "Wi-Fi" "Connecting to $ssid..."
                         nmcli con up id "$ssid"
                     else
-                        password=$(wofi --dmenu --width 340 --height 55 --cache-file /dev/null --prompt "Password for $ssid" --password)
+                        password=$(wofi --dmenu -Dprint_command=false --width 340 --height 55 --cache-file /dev/null --prompt "Password for $ssid" --password)
                         if [ -n "$password" ]; then
                             notify-send -t 2000 "Wi-Fi" "Connecting to $ssid..."
                             nmcli dev wifi connect "$ssid" password "$password"
