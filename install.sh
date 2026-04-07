@@ -135,9 +135,31 @@ done < <(cd "$DOTFILES" && find . -type f -not -path './.git/*')
 # archinstall. Stow handles directories fine; it only chokes on real files.
 
 # --- Symlink dotfiles with stow ---
-green "==> Linking dotfiles with stow..."
+#
+# DANGER NOTE: do NOT use `--restow` here. Stow folds directories whose
+# contents are entirely stow-owned (e.g. ~/wallpapers/bank becomes a single
+# symlink to $DOTFILES/wallpapers/bank). On a re-run, `--restow` walks the
+# package tree by path and unlinks "$HOME/wallpapers/bank/foo.jpg", which
+# resolves *through* the folded symlink and deletes the file inside
+# $DOTFILES — wiping the source. This script previously did exactly that.
+#
+# Instead: pre-clean any existing symlinks in $HOME that point into
+# $DOTFILES, then stow fresh with --no-folding so re-runs are always safe.
+green "==> Pre-cleaning previous stow symlinks..."
+DOTFILES_REAL="$(readlink -f "$DOTFILES")"
+# Remove any symlink under $HOME that resolves into $DOTFILES. -xdev keeps
+# us on the home filesystem; -depth ensures children are removed before
+# their (possibly folded) parent symlinks.
+find "$HOME" -xdev -depth -lname '*' 2>/dev/null | while IFS= read -r link; do
+    target="$(readlink -f "$link" 2>/dev/null || true)"
+    case "$target" in
+        "$DOTFILES_REAL"|"$DOTFILES_REAL"/*) rm -f "$link" ;;
+    esac
+done
+
+green "==> Linking dotfiles with stow (no folding)..."
 cd "$DOTFILES"
-stow -v --restow \
+stow -v --no-folding \
     --ignore='^install\.sh$' \
     --ignore='^README\.md$' \
     --ignore='^CLAUDE\.md$' \
