@@ -2,6 +2,7 @@
 
 Arch Linux + Hyprland rice with Catppuccin Mocha theme. One script to go from a fresh Arch install to a fully configured desktop.
 
+
 ## What's Included
 
 | Component | Tool | Config |
