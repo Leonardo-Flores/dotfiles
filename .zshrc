@@ -27,6 +27,9 @@ export PATH="$HOME/.local/bin:$PATH"
 # Editor
 export EDITOR=nvim
 
+# SSH agent (managed by systemd --user ssh-agent.service)
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+
 # FZF integration
 eval "$(fzf --zsh 2>/dev/null)"
 
