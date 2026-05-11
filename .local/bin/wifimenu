@@ -1,43 +1,39 @@
 #!/bin/bash
-# Wi-Fi menu using wofi — scan, connect, disconnect.
+# Wi-Fi menu using fuzzel — scan, connect, disconnect.
 #
 # Design notes:
-# - Toggle behavior: clicking the waybar icon while a wofi menu is already up
-#   closes it (singleton). This avoids the "click 5 times because nothing
-#   visibly happened, then mash Esc" failure mode.
+# - Launcher: fuzzel (Wayland-native, ~300ms cold-start vs wofi's ~500ms).
+#   Theme lives in ~/.config/fuzzel/fuzzel.ini.
+# - Toggle behavior: clicking the waybar icon while a fuzzel menu is up
+#   closes it (singleton). Avoids the "click N times, mash Esc N times" loop.
 # - Non-blocking rescan: `nmcli dev wifi list` *without* --rescan=no will
-#   trigger a synchronous AP scan and block ~4 seconds — this was the actual
-#   cause of the "menu doesn't open" feel. We pass --rescan=no to use the
-#   cached list (returns in ~30ms) and trigger a background rescan to keep
-#   the cache fresh for the *next* open.
+#   trigger a synchronous AP scan and block ~4s — this was the real cause
+#   of "menu doesn't open". We pass --rescan=no to read the cached list
+#   (~30ms) and kick off a background rescan to refresh for the *next* open.
 # - Failure handling: if connecting to a saved network fails (wrong/changed
 #   password), the broken profile is deleted and the user is reprompted.
 
 set -u
 
-WOFI_COMMON=(--dmenu -Dprint_command=false --cache-file /dev/null)
+FUZZEL_COMMON=(--dmenu)
 
 notify() { notify-send -t "${1:-2000}" "Wi-Fi" "$2"; }
 
 # --- Singleton / toggle -------------------------------------------------------
-# If any wofi menu is currently visible, treat this invocation as "close it".
-# We match by exact process name so we don't accidentally kill unrelated stuff.
-if pgrep -x wofi >/dev/null 2>&1; then
-    pkill -x wofi
+if pgrep -x fuzzel >/dev/null 2>&1; then
+    pkill -x fuzzel
     exit 0
 fi
 
 # --- Wi-Fi off short-circuit --------------------------------------------------
 if [ "$(nmcli radio wifi)" = "disabled" ]; then
-    chosen=$(echo "  Turn Wi-Fi On" | wofi "${WOFI_COMMON[@]}" \
-        --width 300 --height 55 --prompt "Wi-Fi Off")
+    chosen=$(echo "  Turn Wi-Fi On" | fuzzel "${FUZZEL_COMMON[@]}" \
+        --lines 1 --prompt "Wi-Fi off  ")
     [[ "$chosen" == *"Turn Wi-Fi On"* ]] && nmcli radio wifi on
     exit 0
 fi
 
 # --- Build network list from cached scan --------------------------------------
-# Kick off a fresh scan in the background so the *next* open is up to date.
-# We do not wait for it — NetworkManager's cached list is good enough now.
 nmcli dev wifi rescan >/dev/null 2>&1 &
 
 current_ssid=$(nmcli -t -f active,ssid dev wifi | awk -F: '$1=="yes"{print substr($0, index($0,$2))}')
@@ -47,7 +43,7 @@ ssids=()
 declare -A seen
 
 while IFS= read -r line; do
-    # nmcli -t output is colon-separated and right-anchored: SSID:SIGNAL:SECURITY
+    # nmcli -t output: SSID:SIGNAL:SECURITY (parse from right since SSIDs may contain colons)
     security="${line##*:}"
     rest="${line%:*}"
     signal="${rest##*:}"
@@ -80,18 +76,18 @@ for e in "${entries[@]}"; do
 done
 menu+="  Turn Wi-Fi Off"
 
-lines=$(( ${#entries[@]} + 1 ))
-height=$(( lines * 36 + 20 ))
-[ "$height" -gt 420 ] && height=420
+# Fuzzel sizes itself to --lines; cap so the menu doesn't fill the screen.
+total_lines=$(( ${#entries[@]} + 1 ))
+[ "$total_lines" -gt 12 ] && total_lines=12
 
-chosen=$(printf '%s' "$menu" | wofi "${WOFI_COMMON[@]}" \
-    --width 340 --height "$height" --prompt "Wi-Fi")
+chosen=$(printf '%s' "$menu" | fuzzel "${FUZZEL_COMMON[@]}" \
+    --lines "$total_lines" --prompt "Wi-Fi  ")
 [ -z "$chosen" ] && exit 0
 
-# --- Helpers for connect flow -------------------------------------------------
+# --- Helpers ------------------------------------------------------------------
 prompt_password() {
-    wofi "${WOFI_COMMON[@]}" --width 340 --height 55 \
-        --prompt "Password for $1" --password </dev/null
+    fuzzel "${FUZZEL_COMMON[@]}" --lines 0 --password='*' \
+        --prompt "  $1  " </dev/null
 }
 
 connect_with_password() {
@@ -105,7 +101,7 @@ connect_with_password() {
         notify 3000 "Connected to $ssid"
         return 0
     fi
-    # Failed connect leaves a broken profile behind — drop it so retries work.
+    # Drop the failed profile so retries get a fresh prompt instead of replaying the bad password.
     nmcli con delete "$ssid" >/dev/null 2>&1
     notify 4000 "Failed to connect to $ssid (wrong password?)"
     return 1
@@ -129,8 +125,6 @@ case "$chosen" in
             fi
 
             if nmcli -t -f name con show | grep -qx "$ssid"; then
-                # Saved profile exists — try it; on failure assume the saved
-                # password is stale and reprompt.
                 notify 2000 "Connecting to $ssid…"
                 if nmcli --wait 25 con up id "$ssid" >/dev/null 2>&1; then
                     notify 3000 "Connected to $ssid"
