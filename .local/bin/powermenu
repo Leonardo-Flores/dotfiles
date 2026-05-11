@@ -1,9 +1,19 @@
 #!/bin/sh
-# Simple power menu using wofi
+# Power menu using fuzzel.
+# Singleton: second click on the bar icon closes the open menu.
 
-options="  Lock\n  Logout\n  Suspend\n  Reboot\n  Shutdown"
+if pgrep -x fuzzel >/dev/null 2>&1; then
+    pkill -x fuzzel
+    exit 0
+fi
 
-chosen=$(echo -e "$options" | wofi --dmenu -Dprint_command=false --width 200 --height 260 --cache-file /dev/null --prompt "Power")
+options="  Lock
+  Logout
+  Suspend
+  Reboot
+  Shutdown"
+
+chosen=$(printf '%s' "$options" | fuzzel --dmenu --lines 5 --prompt "Power  ")
 
 case "$chosen" in
     *Lock)     hyprlock ;;

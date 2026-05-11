@@ -1,30 +1,49 @@
 #!/bin/bash
-# Bluetooth menu using wofi
+# Bluetooth menu using fuzzel.
+#
+# Design notes:
+# - Singleton/toggle: a second click closes the open fuzzel menu instead
+#   of stacking instances.
+# - Scan is run synchronously (with a timeout) because there's no useful
+#   cached device list to fall back on the way nmcli has one for Wi-Fi —
+#   the user opted into "Scan for devices" knowing it takes a few seconds.
 
-power_status=$(bluetoothctl show 2>/dev/null | grep "Powered:" | awk '{print $2}')
+set -u
+
+FUZZEL_COMMON=(--dmenu)
+
+notify() { notify-send -t "${1:-2000}" "Bluetooth" "$2"; }
+
+if pgrep -x fuzzel >/dev/null 2>&1; then
+    pkill -x fuzzel
+    exit 0
+fi
+
+power_status=$(bluetoothctl show 2>/dev/null | awk '/Powered:/ {print $2}')
 
 if [ "$power_status" = "no" ]; then
-    chosen=$(printf "  Power On\n" | wofi --dmenu -Dprint_command=false --width 240 --height 55 --cache-file /dev/null --prompt "Bluetooth Off")
+    chosen=$(printf "  Power On" | fuzzel "${FUZZEL_COMMON[@]}" \
+        --lines 1 --prompt "Bluetooth off  ")
     if [[ "$chosen" == *"Power On"* ]]; then
-        bluetoothctl power on
+        bluetoothctl power on >/dev/null
         sleep 1
         exec "$0"
     fi
     exit 0
 fi
 
-# Build device list into arrays
+# --- Build paired-device list -------------------------------------------------
 entries=()
 macs=()
 actions=()
 
 while IFS= read -r line; do
     [ -z "$line" ] && continue
-    mac=$(echo "$line" | awk '{print $2}')
-    name=$(echo "$line" | cut -d' ' -f3-)
+    mac=$(awk '{print $2}' <<<"$line")
+    name=$(cut -d' ' -f3- <<<"$line")
     info=$(bluetoothctl info "$mac" 2>/dev/null)
-    connected=$(echo "$info" | grep "Connected:" | awk '{print $2}')
-    icon=$(echo "$info" | grep "Icon:" | awk '{print $2}')
+    connected=$(awk '/Connected:/ {print $2}' <<<"$info")
+    icon=$(awk '/Icon:/ {print $2}' <<<"$info")
 
     case "$icon" in
         audio-headset|audio-headphones) sym="" ;;
@@ -46,42 +65,45 @@ while IFS= read -r line; do
     macs+=("$mac")
 done < <(bluetoothctl devices Paired 2>/dev/null)
 
-# Build wofi input
 menu=""
 for e in "${entries[@]}"; do
-    menu+="$e\n"
+    menu+="$e"$'\n'
 done
-menu+="  Scan for devices\n  Power Off"
+menu+="  Scan for devices"$'\n'"  Power Off"
 
-lines=$(( ${#entries[@]} + 2 ))
-height=$(( lines * 36 + 20 ))
-[ "$height" -gt 320 ] && height=320
+total_lines=$(( ${#entries[@]} + 2 ))
+[ "$total_lines" -gt 10 ] && total_lines=10
 
-chosen=$(printf "$menu" | wofi --dmenu -Dprint_command=false --width 300 --height "$height" --cache-file /dev/null --prompt "Bluetooth")
+chosen=$(printf '%s' "$menu" | fuzzel "${FUZZEL_COMMON[@]}" \
+    --lines "$total_lines" --prompt "Bluetooth  ")
 [ -z "$chosen" ] && exit 0
 
 case "$chosen" in
     *"Scan for devices"*)
-        notify-send -t 3000 "Bluetooth" "Scanning..."
-        bluetoothctl --timeout 8 scan on &>/dev/null &
-        sleep 8
+        notify 3000 "Scanning…"
+        bluetoothctl --timeout 8 scan on >/dev/null 2>&1
         exec "$0"
         ;;
     *"Power Off"*)
-        bluetoothctl power off
+        bluetoothctl power off >/dev/null
+        notify 2000 "Bluetooth turned off"
         ;;
     *)
         for i in "${!entries[@]}"; do
-            if [ "${entries[$i]}" = "$chosen" ]; then
-                if [ "${actions[$i]}" = "disconnect" ]; then
-                    bluetoothctl disconnect "${macs[$i]}"
-                    notify-send -t 2000 "Bluetooth" "Disconnected from $(echo "$chosen" | sed 's/.*  //;s/  .*//')"
+            [ "${entries[$i]}" = "$chosen" ] || continue
+            name=$(sed 's/^[^ ]*  //;s/  (connected)$//' <<<"$chosen")
+            if [ "${actions[$i]}" = "disconnect" ]; then
+                bluetoothctl disconnect "${macs[$i]}" >/dev/null
+                notify 2000 "Disconnected from $name"
+            else
+                notify 2000 "Connecting to $name…"
+                if bluetoothctl connect "${macs[$i]}" >/dev/null 2>&1; then
+                    notify 3000 "Connected to $name"
                 else
-                    notify-send -t 2000 "Bluetooth" "Connecting..."
-                    bluetoothctl connect "${macs[$i]}"
+                    notify 4000 "Failed to connect to $name"
                 fi
-                break
             fi
+            break
         done
         ;;
 esac
