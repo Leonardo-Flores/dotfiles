@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Wraps `cliphist store` to also record the timestamp of new entries in a
+# sidecar TSV. Read stdin once, tee it to cliphist and to a buffer, then
+# look up the freshly-assigned ID and append it.
+
+set -euo pipefail
+
+ts_file="$HOME/.cache/cliphist-timestamps.tsv"
+mkdir -p "$(dirname "$ts_file")"
+
+before=$(cliphist list 2>/dev/null | head -1 | cut -f1 || echo 0)
+before=${before:-0}
+
+cliphist store
+
+after=$(cliphist list 2>/dev/null | head -1 | cut -f1 || echo 0)
+after=${after:-0}
+
+if [ "$after" -gt "$before" ]; then
+    printf '%s\t%s\n' "$after" "$(date -Iseconds)" >> "$ts_file"
+fi

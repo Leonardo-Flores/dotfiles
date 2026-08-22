@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# Cliphist clipboard picker with image thumbnails via rofi.
+# - Decodes image entries to a temp dir on demand
+# - Replaces "[[ binary data N MiB png WxH ]]" with: #ID · WxH · size · date
+# - For text entries, shows the text itself.
+
+set -euo pipefail
+
+tmp_dir="/tmp/cliphist-$USER"
+ts_file="$HOME/.cache/cliphist-timestamps.tsv"
+mkdir -p "$tmp_dir"
+touch "$ts_file"
+find "$tmp_dir" -maxdepth 1 -type f -mmin +60 -delete 2>/dev/null || true
+
+read -r -d '' prog <<'AWK' || true
+BEGIN { FS = "\t" }
+
+ARGIND == 1 {
+    ts[$1] = $2
+    next
+}
+
+{
+    id = $1
+    rest = $0
+    sub(/^[0-9]+\t/, "", rest)
+
+    if (match(rest, /binary data ([0-9.]+ ?[KMG]?i?B) (png|jpg|jpeg|bmp|gif) ([0-9]+x[0-9]+)/, g)) {
+        ext = g[2]; size = g[1]; dims = g[3]
+        file = ENVIRON["tmp_dir"] "/" id "." ext
+        if (system("test -f " file) != 0) {
+            system("cliphist decode " id " > " file)
+        }
+        label = "#" id "  ·  " dims "  ·  " size
+        if (id in ts) label = label "  ·  " ts[id]
+        printf "%s\x00icon\x1f%s\n", label, file
+    } else {
+        gsub(/\t/, " ", rest)
+        gsub(/[^[:print:]]/, "·", rest)
+        if (length(rest) > 90) rest = substr(rest, 1, 87) "…"
+        print "#" id "  ·  " rest
+    }
+}
+AWK
+
+export tmp_dir
+choice=$(gawk "$prog" "$ts_file" <(cliphist list) \
+    | rofi -dmenu -i -p "clipboard" -show-icons \
+           -theme "$HOME/.config/rofi/cliphist.rasi")
+
+if [ -n "${choice:-}" ]; then
+    id=$(printf '%s' "$choice" | sed -nE 's/^#([0-9]+).*/\1/p')
+    [ -n "$id" ] && cliphist decode "$id" | wl-copy
+fi
