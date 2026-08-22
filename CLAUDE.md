@@ -52,3 +52,13 @@ Uses sugar-candy theme. Theme config is at `sddm/sugar-candy-theme.conf` and the
 - **Keyboard layout:** Brazilian (`br`).
 - **Comments:** Mix of English and Portuguese in config files.
 - **No window gaps or rounding** - the rice uses `gaps_in = 0`, `gaps_out = 0`, `rounding = 0`.
+
+## Devbox (EC2)
+
+Além do notebook, o mesmo ambiente de terminal roda numa EC2 (`berzerk-infra/stacks/devbox/prod`, sa-east-1, Ubuntu 24.04 arm64). Só a parte de terminal vai pra lá:
+
+- **Instalar/atualizar o ambiente na box:** `./install-server.sh` (apt + releases do GitHub; faz o stow ignorando hypr/waybar/etc.). Não usar `install.sh` lá.
+- **Controlar a box do notebook:** `box status|up [horas]|down|ssh|mosh|attach` (`.local/bin/box`). Liga seg–sex 07:00 sozinha; fora do horário comercial (07–17) um watchdog na box desliga 4 h após a última atividade, então `box up` à noite/fim de semana basta.
+- `/etc/devbox` marca a máquina como box: `.tmux.conf` liga `@continuum-boot` só lá.
+- `.ssh/config` tem `devbox` (Tailscale) e `devbox-ssm` (sem Tailscale, via SSM).
+

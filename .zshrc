@@ -14,6 +14,11 @@ setopt HIST_IGNORE_DUPS
     source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 [ -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ] && \
     source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+# (Debian/Ubuntu — devbox)
+[ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && \
+    source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ] && \
+    source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # Starship prompt
 eval "$(starship init zsh)"
@@ -22,13 +27,13 @@ eval "$(starship init zsh)"
 [ -f ~/.secrets ] && source ~/.secrets
 
 # Path
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"
 
 # Editor
 export EDITOR=nvim
 
 # SSH agent (managed by systemd --user ssh-agent.service)
-export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/ssh-agent.socket"  # fallback: Tailscale SSH não passa pelo PAM
 
 # FZF integration
 eval "$(fzf --zsh 2>/dev/null)"

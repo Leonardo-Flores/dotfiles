@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# Controle da devbox (EC2 sa-east-1, conta Berzerk). Roda do notebook.
+#
+#   box status            estado + ip + uptime
+#   box up                liga (fora do horário comercial ela se desliga sozinha
+#                         4 h depois da última atividade — watchdog na box)
+#   box down              desliga agora
+#   box ssh|mosh          conecta (Tailscale; cai pra SSM se a tailnet não responder)
+#   box attach [SESSAO]   mosh + tmux attach (default: 'default')
+#   box id                imprime o instance id
+set -euo pipefail
+
+REGION=${BOX_REGION:-sa-east-1}
+NAME=${BOX_NAME:-berzerk-devbox-prod}
+PROFILE_ARGS=()  # default profile = Berzerk (908)
+GROUP=$NAME      # schedule group do Terraform (só o start seg-sex 07:00)
+
+aws_() { aws --region "$REGION" "${PROFILE_ARGS[@]}" "$@"; }
+
+instance_id() {
+  aws_ ec2 describe-instances --filters "Name=tag:Name,Values=$NAME" \
+    --query 'Reservations[].Instances[?State.Name!=`terminated`][].InstanceId' --output text | awk '{print $1}'
+}
+
+state() { aws_ ec2 describe-instances --instance-ids "$1" --query 'Reservations[0].Instances[0].State.Name' --output text; }
+
+cmd=${1:-status}; shift || true
+ID=$(instance_id)
+[ -n "$ID" ] || { echo "devbox não encontrada (tag Name=$NAME em $REGION)"; exit 1; }
+
+case "$cmd" in
+  id) echo "$ID" ;;
+
+  status)
+    aws_ ec2 describe-instances --instance-ids "$ID" \
+      --query 'Reservations[0].Instances[0].[InstanceId,InstanceType,State.Name,PublicIpAddress,LaunchTime]' --output table
+    aws_ scheduler list-schedules --group-name "$GROUP" --query 'Schedules[].[Name,State]' --output table 2>/dev/null || true
+    ;;
+
+  up)
+    if [ "$(state "$ID")" != "running" ]; then
+      aws_ ec2 start-instances --instance-ids "$ID" >/dev/null
+      echo "ligando $ID..."
+      aws_ ec2 wait instance-running --instance-ids "$ID"
+      echo "running. SSM agent leva ~30 s; tailscale ~10 s. Fora do horário comercial ela desliga 4 h após a última atividade."
+    else
+      echo "já está ligada"
+    fi
+    ;;
+
+  down)
+    aws_ ec2 stop-instances --instance-ids "$ID" >/dev/null
+    echo "desligando $ID"
+    ;;
+
+  ssh|mosh)
+    if tailscale status --peer=false >/dev/null 2>&1 && tailscale ping -c 1 --timeout 2s devbox >/dev/null 2>&1; then
+      exec "$cmd" devbox "$@"
+    else
+      [ "$cmd" = mosh ] && echo "(tailnet indisponível: mosh não passa por SSM, caindo pra ssh)"
+      exec ssh -t devbox-ssm "$@"
+    fi
+    ;;
+
+  attach)
+    sess=${1:-default}
+    exec "$0" mosh -- tmux new-session -A -s "$sess"
+    ;;
+
+  *) sed -n '2,12p' "$0"; exit 1 ;;
+esac

@@ -1,3 +1,6 @@
 wallpapers/current.jpg
 .config/nvim/lazy-lock.json
 .local/bin/claude
+.local/bin/typst
+.local/bin/session-manager-plugin
+.local/bin/job-radar
