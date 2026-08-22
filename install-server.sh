@@ -118,6 +118,11 @@ command -v claude >/dev/null || curl -fsSL https://claude.ai/install.sh | bash
 green "==> stow (só a parte de terminal)"
 sudo chsh -s "$(command -v zsh)" "$USER" || true
 cd "$DOTFILES"
+# Diretórios-alvo precisam existir ANTES do stow, senão ele "dobra" ~/.config
+# inteiro num symlink pro repo (ignora os --ignore e faz qualquer arquivo novo
+# em ~/.config — tokens do gh, gcloud — cair dentro do repo git).
+mkdir -p ~/.config ~/.ssh ~/.local/bin ~/.local/share
+chmod 700 ~/.ssh
 # .zshrc/.bashrc padrão do Ubuntu atrapalham o stow
 for f in .zshrc .bashrc .profile; do [ -f ~/$f ] && [ ! -L ~/$f ] && mv ~/$f ~/$f.pre-stow; done
 stow -v --target="$HOME" \
@@ -125,7 +130,9 @@ stow -v --target="$HOME" \
   --ignore='hypr' --ignore='waybar' --ignore='wofi' --ignore='swaync' --ignore='fuzzel' --ignore='kitty' \
   --ignore='CLAUDE.md' --ignore='README.md' .
 
-# ssh-agent via systemd --user (o .zshrc aponta SSH_AUTH_SOCK pra ele)
+# ssh-agent via systemd --user (o .zshrc aponta SSH_AUTH_SOCK pra ele).
+# Sob sudo -u / cloud-init não há sessão: aponta o user manager na mão.
+export XDG_RUNTIME_DIR="/run/user/$(id -u)" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
 systemctl --user daemon-reload || true
 systemctl --user enable --now ssh-agent.service || true
 

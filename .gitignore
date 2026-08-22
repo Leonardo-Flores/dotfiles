@@ -4,3 +4,4 @@ wallpapers/current.jpg
 .local/bin/typst
 .local/bin/session-manager-plugin
 .local/bin/job-radar
+.config/systemd/user/default.target.wants/
