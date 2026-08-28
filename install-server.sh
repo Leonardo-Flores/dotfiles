@@ -128,7 +128,7 @@ for f in .zshrc .bashrc .profile; do [ -f ~/$f ] && [ ! -L ~/$f ] && mv ~/$f ~/$
 stow -v --target="$HOME" \
   --ignore='sddm' --ignore='install.*\.sh' --ignore='wallpapers' --ignore='system' \
   --ignore='hypr' --ignore='waybar' --ignore='wofi' --ignore='swaync' --ignore='fuzzel' --ignore='kitty' \
-  --ignore='^/CLAUDE\.md' --ignore='^/README\.md' .
+  --ignore='^/?CLAUDE\.md$' --ignore='^/?README\.md$' .
 
 # ssh-agent via systemd --user (o .zshrc aponta SSH_AUTH_SOCK pra ele).
 # Sob sudo -u / cloud-init não há sessão: aponta o user manager na mão.
