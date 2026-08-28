@@ -121,14 +121,14 @@ cd "$DOTFILES"
 # Diretórios-alvo precisam existir ANTES do stow, senão ele "dobra" ~/.config
 # inteiro num symlink pro repo (ignora os --ignore e faz qualquer arquivo novo
 # em ~/.config — tokens do gh, gcloud — cair dentro do repo git).
-mkdir -p ~/.config ~/.ssh ~/.local/bin ~/.local/share
+mkdir -p ~/.config ~/.ssh ~/.local/bin ~/.local/share ~/.claude
 chmod 700 ~/.ssh
 # .zshrc/.bashrc padrão do Ubuntu atrapalham o stow
 for f in .zshrc .bashrc .profile; do [ -f ~/$f ] && [ ! -L ~/$f ] && mv ~/$f ~/$f.pre-stow; done
 stow -v --target="$HOME" \
   --ignore='sddm' --ignore='install.*\.sh' --ignore='wallpapers' --ignore='system' \
   --ignore='hypr' --ignore='waybar' --ignore='wofi' --ignore='swaync' --ignore='fuzzel' --ignore='kitty' \
-  --ignore='CLAUDE.md' --ignore='README.md' .
+  --ignore='^/CLAUDE\.md' --ignore='^/README\.md' .
 
 # ssh-agent via systemd --user (o .zshrc aponta SSH_AUTH_SOCK pra ele).
 # Sob sudo -u / cloud-init não há sessão: aponta o user manager na mão.

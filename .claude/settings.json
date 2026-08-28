@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "defaultMode": "auto"
+  },
+  "model": "claude-fable-5",
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/claude-notify",
+            "timeout": 5,
+            "async": true
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.local/bin/claude-statusline",
+    "padding": 0
+  },
+  "enabledPlugins": {
+    "berzerk-core@berzerk": true
+  },
+  "extraKnownMarketplaces": {
+    "berzerk": {
+      "source": {
+        "source": "github",
+        "repo": "Berzerk-Tech/claude-plugins"
+      }
+    }
+  },
+  "effortLevel": "high",
+  "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "dark",
+  "skipAutoPermissionPrompt": true
+}

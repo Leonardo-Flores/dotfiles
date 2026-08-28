@@ -62,3 +62,7 @@ Além do notebook, o mesmo ambiente de terminal roda numa EC2 (`berzerk-infra/st
 - `/etc/devbox` marca a máquina como box: `.tmux.conf` liga `@continuum-boot` só lá.
 - `.ssh/config` tem `devbox` (Tailscale) e `devbox-ssm` (sem Tailscale, via SSM).
 
+
+## Claude Code
+
+`~/.claude/settings.json`, `~/.claude/CLAUDE.md` (preferências globais + roteamento de modelos) e `~/.claude/skills/` são stowados daqui (`.claude/`). `~/.claude` precisa existir como diretório real antes do stow (senão ele dobra a pasta inteira, com credenciais e histórico, pra dentro do repo) — `install-server.sh` já faz o `mkdir`. Statusline em `.local/bin/claude-statusline`, notificação de fim de turno em `.local/bin/claude-notify` (hook `Stop`; muda na devbox, sem `notify-send`). Agents/skills/hooks compartilhados com o time ficam no plugin `berzerk-core` (`Berzerk-Tech/claude-plugins`), não aqui.

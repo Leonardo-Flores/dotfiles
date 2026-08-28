@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Hook Stop do Claude Code: avisa quando a sessão termina de responder.
+# Silencioso onde não há daemon de notificação (devbox).
+command -v notify-send >/dev/null 2>&1 || exit 0
+cwd=$(jq -r '.cwd // empty' 2>/dev/null)
+name=${cwd:+$(basename "$cwd")}
+notify-send -a "Claude Code" -i utilities-terminal "Claude terminou" "${name:-sessão}" >/dev/null 2>&1 || true
+exit 0
